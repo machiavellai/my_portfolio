@@ -75,7 +75,7 @@ Ask. Do not guess and proceed. A wrong assumption compounds across a build, and 
 ## Performance
 
 This site's LCP is a text hero. Protect it.
-- Fonts load via `next/font`. Plex Serif is route-scoped to `/work/[slug]` — never move it to the root layout.
+- Fonts load via `next/font`. IBM Plex Sans + IBM Plex Mono only. No serif — do not add a third family.
 - All images go through `next/image` with explicit dimensions. No CLS.
 - No client-side data fetching for content that could be fetched on the server.
 - Before adding a client-side library, check whether the same thing can be done server-side or with CSS.

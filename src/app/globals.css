@@ -1,0 +1,155 @@
+@import 'tailwindcss';
+@config '../../tailwind.config.ts';
+
+/* Design tokens. Ratios in comments are WCAG 2.1 relative-luminance measurements
+   computed in frame 6e of the design file, not estimates.
+   Dark theme is a token swap only — no component should branch on theme. */
+
+:root {
+  /* ink ramp */
+  --ink-900: #12172b; /* display, primary fill, code                 */
+  --ink-800: #1f2740; /* primary hover fill                          */
+  --ink-700: #394160; /* body prose        — 9.58:1 on paper         */
+  --ink-600: #505a7c; /* meta, rail, code comments — 6.50:1 on paper */
+  --ink-500: #6f7a9b; /* field border      — 4.26:1 on surface       */
+  --ink-400: #959cb2; /* DECORATIVE ONLY   — 2.74:1, never a border
+                         that identifies a control, never text        */
+  --ink-300: #b3b8c6;
+  --ink-200: #d4d6dd; /* card + hairline rules (decorative, exempt)  */
+  --ink-100: #eceef2; /* disabled fill                               */
+
+  --paper: #fafaf9;
+  --surface: #ffffff;
+  --sunken: #f4f5f7;
+
+  --accent: #1e3fa8; /* links + focus ring only — 8.62:1 on paper, 9.01:1 on surface */
+
+  --success: #0f7a44;
+  --warn: #8a5200;
+  --danger: #b42323;
+  --info: #12558a;
+
+  --success-tint: #eaf6ef;
+  --warn-tint: #fdf3e2;
+  --danger-tint: #fdeceb;
+  --info-tint: #e9f2fb;
+
+  --ring: 0 0 0 0; /* the ring is an outline, not a shadow — see below */
+}
+
+:root[data-theme='dark'] {
+  --ink-900: #e8eaf2; /* display + primary (light) fill              */
+  --ink-800: #d4d8e6;
+  --ink-700: #b9c0d4; /* body prose                                  */
+  --ink-600: #8b94ad; /* meta, rail, code comments                   */
+  --ink-500: #6f7a9b; /* field border — measured against #151b2e     */
+  --ink-400: #4e5a80;
+  --ink-300: #3d4767;
+  --ink-200: #262d44;
+  --ink-100: #1d2338;
+
+  --paper: #0d1120;
+  --surface: #151b2e;
+  --sunken: #0a0e19;
+
+  --accent: #93a8ff;
+
+  --success: #5fd98f;
+  --warn: #f0b354;
+  --danger: #ff8a85;
+  --info: #6fc0f5;
+
+  --success-tint: #10281b;
+  --warn-tint: #2a1f0a;
+  --danger-tint: #2c1413;
+  --info-tint: #0c1e2e;
+}
+
+/* Fonts. Loaded via next/font/local in app/layout.tsx; these are the variable names
+   the Tailwind config expects. Latin subset, WOFF2, display: swap.
+   Plex Sans variable (wght 400–600) + Plex Mono 400 + Plex Mono 600. ~84 KB.
+   Not wired in this pass — layout.tsx still ships the create-next-app Geist fonts. */
+
+/* ---- The focus ring. One rule, six components, never overridden. ---- */
+:where(a, button, [role='button'], input, textarea, select, summary, [tabindex]):focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+  border-radius: inherit;
+}
+/* Never do this: :focus { outline: none }. Only :focus-visible scopes the ring away
+   from mouse clicks, and it does so without removing it from keyboard users. */
+
+/* Sticky nav is 64px; keep the ring clear of it when focus lands via anchor jump. */
+:where(section, [id]) {
+  scroll-margin-top: 80px;
+}
+
+/* ---- Motion. Every transition here has a reduced-motion answer below. ---- */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+html {
+  scroll-behavior: smooth;
+}
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+}
+
+/* Entrance animation is opt-in via a class the observer adds ONLY when motion is
+   allowed. Content must never ship at opacity: 0 waiting for JS. */
+.enter {
+  opacity: 0;
+  transform: translateY(8px);
+  transition:
+    opacity 220ms cubic-bezier(0, 0, 0.2, 1),
+    transform 220ms cubic-bezier(0, 0, 0.2, 1);
+}
+.enter[data-shown='true'] {
+  opacity: 1;
+  transform: none;
+}
+@media (prefers-reduced-motion: reduce) {
+  .enter {
+    opacity: 1;
+    transform: none;
+    transition: none;
+  }
+}
+
+/* Skip link — first focusable element in the document. */
+.skip {
+  position: absolute;
+  left: -9999px;
+}
+.skip:focus-visible {
+  left: 16px;
+  top: 16px;
+  z-index: 50;
+  position: fixed;
+  padding: 12px 16px;
+  background: var(--surface);
+  color: var(--ink-900);
+  border: 1px solid var(--ink-500);
+  border-radius: 6px;
+}
+
+/* ---- Button `loading` spinner. Duration is the config's own `spin` token (900ms) —
+   not a new number. Rotation is an animation, which `transitionDuration` can't express,
+   so it's declared here rather than as a Tailwind utility. */
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+.spinner {
+  animation: spin 900ms linear infinite;
+}
