@@ -12,8 +12,6 @@ import { defineType, defineField, defineArrayMember } from 'sanity';
  * this design, so an empty alt is always a deliberate authoring choice, never a default.
  *
  * KNOWN UNRECONCILED GAPS (reported, not patched — see build notes):
- *   - project.scope is required here but no component in components.md or
- *     handoff/layouts.md renders it anywhere (WorkCard's own field list omits it).
  *   - handoff/layouts.md says "Writing and Code sections exist in the schema and
  *     render null when empty" — only `writing` exists below. There is no `code`
  *     document type at all.
@@ -156,8 +154,8 @@ export const project = defineType({
       description: 'The "Handled:" line — the card\'s real argument. e.g. "webhook replay, refund-after-download".',
       validation: (r) => r.required(),
     }),
-    // KNOWN GAP: required by this schema, but no component in components.md or
-    // handoff/layouts.md renders it anywhere. Reported, not removed — see file header.
+    // Rendered beside the card's index number (frame 8i). components.md's WorkCard
+    // omits it; 8i wins.
     defineField({
       name: 'scope',
       type: 'string',
