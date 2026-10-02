@@ -17,6 +17,23 @@ import { defineType, defineField, defineArrayMember } from 'sanity';
  *     document type at all.
  */
 
+// Inline marks for every Portable Text field: bold, italic, links. No lists, no other
+// decorators. The spec defines block styles only; this is the agreed reading.
+const marks = {
+  decorators: [
+    { title: 'Bold', value: 'strong' },
+    { title: 'Italic', value: 'em' },
+  ],
+  annotations: [
+    {
+      name: 'link',
+      type: 'object',
+      title: 'Link',
+      fields: [defineField({ name: 'href', type: 'url', validation: (r) => r.required() })],
+    },
+  ],
+};
+
 const mediaImage = defineField({
   name: 'media',
   title: 'Media',
@@ -92,7 +109,7 @@ export const home = defineType({
     }),
     defineField({ name: 'ctaLabel', type: 'string', validation: (r) => r.required() }),
     defineField({ name: 'ctaTarget', type: 'string', validation: (r) => r.required() }),
-    defineField({ name: 'about', type: 'array', of: [defineArrayMember({ type: 'block', styles: [{ title: 'Body', value: 'normal' }] })], validation: (r) => r.required() }),
+    defineField({ name: 'about', type: 'array', of: [defineArrayMember({ type: 'block', styles: [{ title: 'Body', value: 'normal' }], lists: [], marks })], validation: (r) => r.required() }),
     defineField({
       name: 'stack',
       type: 'array',
@@ -180,7 +197,7 @@ export const project = defineType({
       name: 'body',
       type: 'array',
       of: [
-        defineArrayMember({ type: 'block', styles: [{ title: 'Body', value: 'normal' }, { title: 'Section (h2)', value: 'h2' }] }),
+        defineArrayMember({ type: 'block', styles: [{ title: 'Body', value: 'normal' }, { title: 'Section (h2)', value: 'h2' }], lists: [], marks }),
         defineArrayMember({
           type: 'object',
           name: 'codeBlock',
