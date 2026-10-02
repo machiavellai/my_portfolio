@@ -8,6 +8,22 @@ Personal portfolio site. Next.js App Router, TypeScript, Tailwind, Sanity for co
 Primary audience: hiring managers evaluating senior full-stack engineering roles.
 Secondary: contract clients.
 
+The design spec lives in `handoff/` at the repo root and is authoritative:
+
+- `handoff/README.md` — stack, routes, build order, non-negotiables
+- `handoff/components.md` — component props, variants, states
+- `handoff/layouts.md` — page layouts, geometry, responsive rules
+- `handoff/motion.md` — durations, easing, reduced-motion fallbacks
+- `handoff/accessibility.md` — WCAG requirements per element
+- `handoff/tokens.css` — design tokens
+- `handoff/schema.ts`, `handoff/tailwind.config.ts` — reference copies. The repo's
+  own `src/sanity/schema.ts` and `tailwind.config.ts` are what build; these show
+  what the design specified. Where they differ, the repo version wins and the
+  difference should be documented in a comment, never silently reconciled.
+
+Read `handoff/` before asking what the spec says. If the code and the spec
+disagree, stop and report the conflict rather than picking one.
+
 The design was produced in Claude Design and handed off as a spec. **The spec is the source of truth for layout, tokens, and states.** Where the spec and your instinct disagree, follow the spec and flag the disagreement rather than silently improving it.
 
 ## Hard rules
