@@ -4,16 +4,24 @@ type ButtonVariant = 'primary' | 'secondary' | 'ghost';
 type ButtonSize = 'sm' | 'md' | 'lg';
 
 type ButtonBase = {
-  variant?: ButtonVariant;
   size?: ButtonSize;
-  loading?: boolean;
-  disabled?: boolean;
   fullWidth?: boolean;
   children: ReactNode;
 };
 
+// Deliberately stricter than components.md's ButtonProps, which puts loading/disabled
+// on links and requires onClick on submit:
+// - Links take neither loading nor disabled. A disabled <a> still takes focus and still
+//   navigates — a broken affordance, not a state.
+// - Submit is driven by the parent form's onSubmit, so onClick is optional there.
+// - Loading is primary-only: the state table marks it "n/a — never async" for the rest.
+type LinkProps = { href: string; variant?: ButtonVariant; onClick?: never; type?: never; loading?: never; disabled?: never };
+type ActionProps = { href?: never; onClick: () => void; type?: 'button' };
+type SubmitProps = { href?: never; onClick?: () => void; type: 'submit' };
+type LoadingProps = { variant?: 'primary'; loading?: boolean } | { variant: 'secondary' | 'ghost'; loading?: never };
+
 export type ButtonProps = ButtonBase &
-  ({ href: string; onClick?: never; type?: never } | { href?: never; onClick: () => void; type?: 'button' | 'submit' });
+  (LinkProps | ((ActionProps | SubmitProps) & LoadingProps & { disabled?: boolean }));
 
 // Height/padding/font per components.md's size table, mapped onto tailwind.config.ts's
 // scale. `md` lands exactly on scale values (44 is the a11y-floor spacing.11.5, 20 is
@@ -66,18 +74,29 @@ export function Button({
 
   if (rest.href !== undefined) {
     return (
-      <a href={rest.href} className={className} aria-disabled={disabled || undefined}>
-        {loading ? <Spinner /> : null}
+      <a href={rest.href} className={className}>
         {children}
       </a>
     );
   }
 
+  const { onClick } = rest;
+
+  // Loading blocks repeat clicks (and the form submit they'd trigger) without the native
+  // `disabled` attribute: that would swap in the grey disabled styles, which the spec's
+  // loading state doesn't use, and drop keyboard focus off a button the user just pressed.
   return (
     <button
       type={rest.type ?? 'button'}
-      onClick={rest.onClick}
+      onClick={(event) => {
+        if (loading) {
+          event.preventDefault();
+          return;
+        }
+        onClick?.();
+      }}
       disabled={disabled}
+      aria-disabled={loading || undefined}
       aria-busy={loading || undefined}
       className={className}
     >
