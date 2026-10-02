@@ -22,7 +22,9 @@ export default {
       // Ink ramp. 900 is display + primary fill, 700 body, 600 meta, 500 field border,
       // 400 is decorative only (fails 3:1 on white — see accessibility.md).
       ink: {
-        950: '#090d18', // NOT in handoff/tokens.css — see Button `active`/primary. Flagged.
+        // Button primary `active`, from components.md. Not in handoff/tokens.css.
+        // BLOCKED: no dark-theme value in the spec — taken back to the design spec.
+        950: '#090d18',
         900: 'var(--ink-900)',
         800: 'var(--ink-800)',
         700: 'var(--ink-700)',
@@ -72,6 +74,7 @@ export default {
       ui: ['0.9375rem', { lineHeight: '1.5', fontWeight: '400' }], // 15 — buttons md, labels, metric label
       'ui-lg': ['1.0625rem', { lineHeight: '1.5', fontWeight: '400' }], // 17 — button lg only. Not in handoff/tailwind.config.ts; added so the lg button label is visibly larger than md, per spec intent (components.md's own 17px, UI line-height/weight rather than borrowing `prose`'s serif-adjacent 1.75).
       'ui-sm': ['0.875rem', { lineHeight: '1.55', fontWeight: '400' }], // 14 — failure line, nav
+      'ui-xs': ['0.84375rem', { lineHeight: '1.5', fontWeight: '400' }], // 13.5 — button sm only
       caption: ['0.8125rem', { lineHeight: '1.5', fontWeight: '400' }], // 13 — form label, hint, error
       mono: ['0.75rem', { lineHeight: '1.6', fontWeight: '400' }], // 12 — meta strip, chips, source line
       code: ['0.875rem', { lineHeight: '1.6', fontWeight: '400' }], // 14 — code blocks
@@ -95,6 +98,11 @@ export default {
       10: '48px',
       11: '64px',
       11.5: '44px',
+      // Button-only steps from components.md's size table.
+      3.5: '14px', // sm padding-x
+      6.5: '26px', // lg padding-x
+      8.5: '36px', // sm height
+      10.5: '52px', // lg height
       12: '72px',
       14: '112px',
       16: '128px',

@@ -23,15 +23,12 @@ type LoadingProps = { variant?: 'primary'; loading?: boolean } | { variant: 'sec
 export type ButtonProps = ButtonBase &
   (LinkProps | ((ActionProps | SubmitProps) & LoadingProps & { disabled?: boolean }));
 
-// Height/padding/font per components.md's size table, mapped onto tailwind.config.ts's
-// scale. `md` lands exactly on scale values (44 is the a11y-floor spacing.11.5, 20 is
-// spacing.5, 15 is the `ui` fontSize). `sm` and `lg` do not: the spec's own numbers
-// (36/14px/13.5px and 52/26px/17px) aren't reachable from the scale, so these round to
-// the nearest existing token rather than introduce arbitrary values. Flagged for review.
+// Height / padding-x / font, exactly per components.md's size table.
+// `sm` is desktop-only (36px is under the 44 touch floor), so below `md` it renders as `md`.
 const sizeClasses: Record<ButtonSize, string> = {
-  sm: 'h-10 px-4 text-ui-sm', // spec: 36px / 14px / 13.5px
-  md: 'h-11.5 px-5 text-ui',
-  lg: 'h-12 px-7 text-ui-lg', // spec: 52px / 26px / 17px
+  sm: 'h-11.5 px-5 text-ui md:h-8.5 md:px-3.5 md:text-ui-xs', // 44 / 20 / 15 → 36 / 14 / 13.5
+  md: 'h-11.5 px-5 text-ui', // 44 / 20 / 15
+  lg: 'h-10.5 px-6.5 text-ui-lg', // 52 / 26 / 17
 };
 
 const variantClasses: Record<ButtonVariant, string> = {
