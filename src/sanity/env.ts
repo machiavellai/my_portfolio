@@ -1,12 +1,8 @@
-// No Sanity project exists for this repo yet — the project ID is read from env rather
-// than hardcoded, so nothing here is a placeholder pretending to be real config.
-// Create the project at sanity.io/manage, then set in .env.local:
-//   NEXT_PUBLIC_SANITY_PROJECT_ID
-//   NEXT_PUBLIC_SANITY_DATASET      (optional, defaults to "production")
+// One set of variables for the site, the Sanity CLI and the hosted Studio. The Studio
+// only receives SANITY_STUDIO_* values; the site reads them server-side at build,
+// where Next.js exposes every env var. Set in .env.local and in Vercel (see .env.example).
 //
-// Each variable is read with a static `process.env.NAME` expression, not a dynamic
-// `process.env[name]` lookup: Next.js only inlines NEXT_PUBLIC_* values it can see
-// statically at build time.
+// Static `process.env.NAME` reads, not `process.env[name]`, so bundlers can replace them.
 
 function required(value: string | undefined, name: string): string {
   if (!value) {
@@ -15,11 +11,8 @@ function required(value: string | undefined, name: string): string {
   return value;
 }
 
-export const projectId = required(
-  process.env.NEXT_PUBLIC_SANITY_PROJECT_ID,
-  'NEXT_PUBLIC_SANITY_PROJECT_ID',
-);
-export const dataset = process.env.NEXT_PUBLIC_SANITY_DATASET ?? 'production';
+export const projectId = required(process.env.SANITY_STUDIO_PROJECT_ID, 'SANITY_STUDIO_PROJECT_ID');
+export const dataset = process.env.SANITY_STUDIO_DATASET ?? 'production';
 
 // Pinned, not read from env and not "today's date": the API version fixes query
 // semantics, so changing it is a deliberate code change reviewed like any other.

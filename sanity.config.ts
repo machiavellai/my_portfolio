@@ -4,8 +4,7 @@ import { schemaTypes } from './src/sanity/schema';
 
 // Hosted Studio (`sanity deploy`), not embedded in the Next app. The Studio is built
 // by the Sanity CLI, which only exposes SANITY_STUDIO_* variables to this file — the
-// NEXT_PUBLIC_* values in src/sanity/env.ts are not visible here. Set both pairs to
-// the same project and dataset.
+// same variables src/sanity/env.ts reads for the site.
 const projectId = process.env.SANITY_STUDIO_PROJECT_ID;
 const dataset = process.env.SANITY_STUDIO_DATASET ?? 'production';
 
