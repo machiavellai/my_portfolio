@@ -34,6 +34,10 @@ const marks = {
   ],
 };
 
+// Metric values must contain a numeral, so "improved performance" can't pass as a
+// metric. Not in the spec; agreed addition.
+const hasNumeral = (value: string | undefined) => /\d/.test(value ?? '') || 'Must contain a number.';
+
 const mediaImage = defineField({
   name: 'media',
   title: 'Media',
@@ -94,7 +98,7 @@ export const home = defineType({
       name: 'heroMetric',
       type: 'object',
       fields: [
-        defineField({ name: 'value', type: 'string', description: 'A string: "0", "$0", "1.2s".', validation: (r) => r.required() }),
+        defineField({ name: 'value', type: 'string', description: 'A string: "0", "$0", "1.2s".', validation: (r) => r.required().custom(hasNumeral) }),
         defineField({ name: 'label', type: 'string', validation: (r) => r.required() }),
         // Promoted to required in frame 8i: the most load-bearing credibility line on
         // the page must not be the one an author can skip.
@@ -159,7 +163,7 @@ export const project = defineType({
       type: 'object',
       description: 'Absent: failureMode promotes into this slot and takes its weight.',
       fields: [
-        defineField({ name: 'value', type: 'string', validation: (r) => r.required() }),
+        defineField({ name: 'value', type: 'string', validation: (r) => r.required().custom(hasNumeral) }),
         defineField({ name: 'label', type: 'string', validation: (r) => r.required() }),
         defineField({ name: 'source', type: 'string', validation: (r) => r.required() }),
       ],
