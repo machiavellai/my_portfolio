@@ -199,8 +199,17 @@ export const project = defineType({
               name: 'alt',
               type: 'string',
               description:
-                'Describe the content. If the caption already does, use "" and let the caption carry it — never both. For diagrams: alt names the relationship, caption names the conclusion.',
-              validation: (r) => r.required(),
+                'Describe the content. If the caption already does, leave this empty and let the caption carry it — never both. For diagrams: alt names the relationship, caption names the conclusion.',
+              // Spec says required *and* allows "". The Studio unsets a cleared string
+              // rather than storing "", so: empty is valid only with a caption, and the
+              // component renders alt="".
+              validation: (r) =>
+                r.custom((alt, context) => {
+                  if (typeof alt === 'string' && alt.trim() !== '') return true;
+                  const parent = context.parent as { caption?: unknown } | undefined;
+                  const caption = typeof parent?.caption === 'string' ? parent.caption.trim() : '';
+                  return caption !== '' || 'Alt text is required unless the caption already describes the image.';
+                }),
             }),
             defineField({ name: 'caption', type: 'string' }),
           ],
