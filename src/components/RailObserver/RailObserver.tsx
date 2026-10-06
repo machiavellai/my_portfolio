@@ -13,6 +13,9 @@ import { useEffect, useRef } from 'react';
  *    client component — approved 2026-10-06.
  *
  * Without JS nothing breaks: no label is marked active and the nav rule stays hidden.
+ *
+ * Also mounted on case-study routes, which have no rail sections — there it only
+ * drives the nav rule.
  */
 export function RailObserver() {
   const sentinel = useRef<HTMLDivElement>(null);

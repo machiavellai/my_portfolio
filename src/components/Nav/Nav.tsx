@@ -45,9 +45,14 @@ export function Nav({ name, resumeUrl, variant = 'home' }: NavProps) {
               ))}
             </ul>
           ) : (
-            <NextLink href="/" className={`hidden md:inline-flex ${sectionLinkClass}`}>
-              ← All work
-            </NextLink>
+            // Lands on the work index, not the top of the homepage. Below md it's hidden
+            // with the other links (spec); the wordmark is the way home there. Hidden on
+            // a wrapper: sectionLinkClass sets inline-flex, which would override `hidden`.
+            <div className="hidden md:block">
+              <NextLink href="/#work" className={sectionLinkClass}>
+                ← All work
+              </NextLink>
+            </div>
           )}
           {/* No résumé uploaded: the button drops rather than linking nowhere. */}
           {resumeUrl ? (

@@ -343,7 +343,7 @@ export type AllSanitySchemaTypes =
 
 // Source: src/sanity/queries.ts
 // Variable: WORK_INDEX_QUERY
-// Query: *[_type == "project"] | order(order asc) {    _id,    title,    "slug": slug.current,    order,    featured,    metric,    failureMode,    scope,    stack,    liveUrl,    repoUrl,    media { alt, image { asset->{ url } } }  }
+// Query: *[_type == "project"] | order(order asc) {    _id,    title,    "slug": slug.current,    order,    featured,    metric,    failureMode,    scope,    stack,    liveUrl,    repoUrl,    media { alt, image { asset->{ url } } },    "paragraphCount": count(body[_type == "block" && style == "normal" && length(pt::text(@)) > 0]),    "evidenceCount": count(body[_type in ["codeBlock", "figure"]])  }
 export type WORK_INDEX_QUERY_RESULT = Array<{
   _id: string;
   title: string;
@@ -368,7 +368,65 @@ export type WORK_INDEX_QUERY_RESULT = Array<{
       } | null;
     };
   } | null;
+  paragraphCount: number | null;
+  evidenceCount: number | null;
 }>;
+
+// Source: src/sanity/queries.ts
+// Variable: CASE_STUDY_QUERY
+// Query: *[_type == "project" && slug.current == $slug][0] {    title,    "slug": slug.current,    metric,    failureMode,    liveUrl,    repoUrl,    "paragraphCount": count(body[_type == "block" && style == "normal" && length(pt::text(@)) > 0]),    "evidenceCount": count(body[_type in ["codeBlock", "figure"]]),    body[] {      ...,      _type == "figure" => { image { asset->{ url } } }    }  }
+export type CASE_STUDY_QUERY_RESULT = {
+  title: string;
+  slug: string | null;
+  metric: {
+    value: string;
+    label: string;
+    source: string;
+  } | null;
+  failureMode: string;
+  liveUrl: string | null;
+  repoUrl: string | null;
+  paragraphCount: number | null;
+  evidenceCount: number | null;
+  body: Array<
+    | {
+        children?: Array<{
+          marks?: Array<string>;
+          text?: string;
+          _type: "span";
+          _key: string;
+        }>;
+        style?: "h2" | "normal";
+        listItem?: never;
+        markDefs?: Array<{
+          href: string;
+          _type: "link";
+          _key: string;
+        }>;
+        level?: number;
+        _type: "block";
+        _key: string;
+      }
+    | {
+        filename: string;
+        language: string;
+        code: string;
+        _type: "codeBlock";
+        _key: string;
+      }
+    | {
+        image: {
+          asset: {
+            url: string;
+          } | null;
+        };
+        alt?: string;
+        caption?: string;
+        _type: "figure";
+        _key: string;
+      }
+  > | null;
+} | null;
 
 // Source: src/sanity/queries.ts
 // Variable: SITE_SETTINGS_QUERY
@@ -440,7 +498,8 @@ export type ROLES_QUERY_RESULT = Array<{
 // Query TypeMap
 declare global {
   interface SanityQueries {
-    '\n  *[_type == "project"] | order(order asc) {\n    _id,\n    title,\n    "slug": slug.current,\n    order,\n    featured,\n    metric,\n    failureMode,\n    scope,\n    stack,\n    liveUrl,\n    repoUrl,\n    media { alt, image { asset->{ url } } }\n  }\n': WORK_INDEX_QUERY_RESULT;
+    '\n  *[_type == "project"] | order(order asc) {\n    _id,\n    title,\n    "slug": slug.current,\n    order,\n    featured,\n    metric,\n    failureMode,\n    scope,\n    stack,\n    liveUrl,\n    repoUrl,\n    media { alt, image { asset->{ url } } },\n    "paragraphCount": count(body[_type == "block" && style == "normal" && length(pt::text(@)) > 0]),\n    "evidenceCount": count(body[_type in ["codeBlock", "figure"]])\n  }\n': WORK_INDEX_QUERY_RESULT;
+    '\n  *[_type == "project" && slug.current == $slug][0] {\n    title,\n    "slug": slug.current,\n    metric,\n    failureMode,\n    liveUrl,\n    repoUrl,\n    "paragraphCount": count(body[_type == "block" && style == "normal" && length(pt::text(@)) > 0]),\n    "evidenceCount": count(body[_type in ["codeBlock", "figure"]]),\n    body[] {\n      ...,\n      _type == "figure" => { image { asset->{ url } } }\n    }\n  }\n': CASE_STUDY_QUERY_RESULT;
     '\n  *[_type == "siteSettings" && _id == "siteSettings"][0] {\n    name,\n    location,\n    timezone,\n    yearsExperience,\n    availability,\n    email,\n    githubUrl,\n    linkedinUrl,\n    "resumeUrl": resumeFile.asset->url,\n    lastUpdated\n  }\n': SITE_SETTINGS_QUERY_RESULT;
     '\n  *[_type == "home" && _id == "home"][0] {\n    headline,\n    evidence,\n    heroMetric,\n    ctaLabel,\n    ctaTarget,\n    about,\n    stack[] { _key, group, items },\n    contactIntro\n  }\n': HOME_QUERY_RESULT;
     '\n  *[_type == "role"] | order(order asc) {\n    _id,\n    title,\n    company,\n    start,\n    end,\n    summary\n  }\n': ROLES_QUERY_RESULT;

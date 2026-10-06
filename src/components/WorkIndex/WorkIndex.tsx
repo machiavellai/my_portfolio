@@ -1,3 +1,4 @@
+import { hasCaseStudy } from '@/sanity/caseStudy';
 import { WorkCard, type WorkProject } from '../WorkCard/WorkCard';
 
 export type WorkIndexProps = {
@@ -28,7 +29,7 @@ export function WorkIndex({ projects }: WorkIndexProps) {
   // The spec defines no empty state for Work; like Writing and Code, render nothing.
   if (projects.length === 0) return null;
 
-  const linkable = projects.filter((p) => p.slug);
+  const linkable = projects.filter((p) => hasCaseStudy(p));
   const tiered = projects.length >= TIER_TWO_FROM;
 
   let cards: WorkProject[];

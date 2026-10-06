@@ -1,5 +1,6 @@
 import Image from 'next/image';
 import NextLink from 'next/link';
+import { hasCaseStudy } from '@/sanity/caseStudy';
 import type { WORK_INDEX_QUERY_RESULT } from '@/sanity/types';
 import { MetricCallout } from '../MetricCallout/MetricCallout';
 import { StackChip } from '../StackChip/StackChip';
@@ -20,7 +21,7 @@ const label = (index: number) => String(index).padStart(2, '0');
 
 export function WorkCard({ project, index, layout = 'card', sizes = '100vw' }: WorkCardProps) {
   // A project with no case study is an index row, never a dead card (frame 7g).
-  if (layout === 'row' || !project.slug) {
+  if (layout === 'row' || !hasCaseStudy(project)) {
     return <WorkRow project={project} index={index} />;
   }
 
@@ -107,7 +108,7 @@ function WorkRow({ project, index }: { project: WorkProject; index: number }) {
   );
   const rowClass = 'flex items-baseline gap-4 border-b border-ink-200 py-4';
 
-  return project.slug ? (
+  return hasCaseStudy(project) ? (
     <NextLink href={`/work/${project.slug}`} className={`group ${rowClass}`}>
       {content}
     </NextLink>
