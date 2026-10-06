@@ -19,3 +19,44 @@ export const WORK_INDEX_QUERY = defineQuery(`
     media { alt, image { asset->{ url } } }
   }
 `);
+
+// Singletons live at fixed IDs (sanity.config.ts). The résumé is resolved to its CDN
+// URL so the nav and footer can link straight to the PDF.
+export const SITE_SETTINGS_QUERY = defineQuery(`
+  *[_type == "siteSettings" && _id == "siteSettings"][0] {
+    name,
+    location,
+    timezone,
+    yearsExperience,
+    availability,
+    email,
+    githubUrl,
+    linkedinUrl,
+    "resumeUrl": resumeFile.asset->url,
+    lastUpdated
+  }
+`);
+
+export const HOME_QUERY = defineQuery(`
+  *[_type == "home" && _id == "home"][0] {
+    headline,
+    evidence,
+    heroMetric,
+    ctaLabel,
+    ctaTarget,
+    about,
+    stack[] { _key, group, items },
+    contactIntro
+  }
+`);
+
+export const ROLES_QUERY = defineQuery(`
+  *[_type == "role"] | order(order asc) {
+    _id,
+    title,
+    company,
+    start,
+    end,
+    summary
+  }
+`);

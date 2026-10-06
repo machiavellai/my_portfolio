@@ -107,6 +107,15 @@ export default {
       14: '112px',
       16: '128px',
       full: '100%',
+      // Off-scale values the spec itself uses. Added by name, each traced to its source,
+      // rather than inlined as arbitrary values. Approved 2026-10-06.
+      'link-y': '15px', // standalone link-row block padding (components.md "Link", SC 2.5.8)
+      'nav-sm': '56px', // nav height below md (components.md "Nav") — contradicts "No 56" above; the nav spec wins
+      'hero-sm': '80px', // hero top below lg (layouts.md "Vertical rhythm")
+    },
+    // Sticky rail at lg: 200px label column + the content column (layouts.md, components.md "Rail").
+    gridTemplateColumns: {
+      rail: '200px minmax(0, 1fr)',
     },
     borderRadius: { none: '0', sm: '4px', DEFAULT: '6px', md: '6px', lg: '8px', full: '9999px' },
     borderWidth: { 0: '0', DEFAULT: '1px', 1.5: '1.5px', 2: '2px' },

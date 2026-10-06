@@ -46,13 +46,9 @@ export function WorkIndex({ projects }: WorkIndexProps) {
   const sizes = singleColumn ? SIZES_FULL : SIZES_HALF;
 
   // Labels number projects in display order: cards first (1..n), then rows.
+  // The section and its "01 / Work" label come from Section (page.tsx).
   return (
-    <section id="work" aria-labelledby="work-heading" className="flex flex-col gap-7 lg:gap-9">
-      {/* Inline section label. At lg this moves into the sticky rail (step 5). */}
-      <h2 id="work-heading" className="font-mono text-rail uppercase text-ink-600">
-        01 / Work
-      </h2>
-
+    <div className="flex flex-col gap-6">
       {cards.length > 0 ? (
         <div className={singleColumn ? 'grid grid-cols-1 gap-6' : 'grid grid-cols-1 gap-6 md:grid-cols-2'}>
           {cards.map((project, i) => {
@@ -78,6 +74,6 @@ export function WorkIndex({ projects }: WorkIndexProps) {
           </div>
         </div>
       ) : null}
-    </section>
+    </div>
   );
 }
