@@ -15,6 +15,18 @@
 export declare const internalGroqTypeReferenceTo: unique symbol;
 
 // Source: schema.json
+export type CodeNote = {
+  _id: string;
+  _type: "codeNote";
+  _createdAt: string;
+  _updatedAt: string;
+  _rev: string;
+  name: string;
+  url: string;
+  blurb: string;
+  language: string;
+};
+
 export type Writing = {
   _id: string;
   _type: "writing";
@@ -309,6 +321,7 @@ export type Geopoint = {
 };
 
 export type AllSanitySchemaTypes =
+  | CodeNote
   | Writing
   | Role
   | SanityImageAssetReference

@@ -11,10 +11,8 @@ import { defineType, defineField, defineArrayMember } from 'sanity';
  * Alt text is a required sibling of every image. There are no decorative images in
  * this design, so an empty alt is always a deliberate authoring choice, never a default.
  *
- * KNOWN UNRECONCILED GAPS (reported, not patched — see build notes):
- *   - handoff/layouts.md says "Writing and Code sections exist in the schema and
- *     render null when empty" — only `writing` exists below. There is no `code`
- *     document type at all.
+ * Differs from handoff/schema.ts: adds `codeNote`, which frame 8i and layouts.md:51
+ * list but handoff/schema.ts never defined. See the type below.
  */
 
 // Inline marks for every Portable Text field: bold, italic, links. No lists, no other
@@ -264,12 +262,8 @@ export const role = defineType({
 });
 
 /**
- * Defined, renders nothing today — kept on purpose from turn 2. Both sections return
- * null when empty rather than rendering an empty state.
- *
- * handoff/layouts.md refers to this and a sibling "Code" section together ("Writing
- * and Code sections exist in the schema..."). Only `writing` actually exists — there
- * is no `code` document type. Reported, not invented.
+ * Defined, renders nothing today — kept on purpose from turn 2. Both the Writing and
+ * Code sections return null when empty rather than rendering an empty state.
  */
 export const writing = defineType({
   name: 'writing',
@@ -282,4 +276,30 @@ export const writing = defineType({
   ],
 });
 
-export const schemaTypes = [siteSettings, home, project, role, writing];
+/**
+ * The Code section: links to repositories. Named in frame 8i (`codeNote[]`) with no
+ * field list; the fields are turn 2's `repo` content model, all required. Turn 2
+ * dropped stars, so there are none here.
+ *
+ * Not yet decided, all rendering questions rather than schema ones: where the
+ * section sits in the homepage order, row vs compact layout (turn 1 drew both), and
+ * how entries are ordered — no order field exists in any turn.
+ */
+export const codeNote = defineType({
+  name: 'codeNote',
+  title: 'Code note',
+  type: 'document',
+  fields: [
+    defineField({ name: 'name', type: 'string', validation: (r) => r.required() }),
+    defineField({ name: 'url', type: 'url', validation: (r) => r.required() }),
+    defineField({
+      name: 'blurb',
+      type: 'string',
+      description: 'One line: what the code does.',
+      validation: (r) => r.required(),
+    }),
+    defineField({ name: 'language', type: 'string', validation: (r) => r.required() }),
+  ],
+});
+
+export const schemaTypes = [siteSettings, home, project, role, writing, codeNote];
