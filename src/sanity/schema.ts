@@ -60,7 +60,9 @@ export const siteSettings = defineType({
   type: 'document',
   fields: [
     defineField({ name: 'name', type: 'string', validation: (r) => r.required() }),
-    defineField({ name: 'location', type: 'string', validation: (r) => r.required() }),
+    // Optional here; required in handoff/schema.ts. The owner chose not to publish a
+    // location. Omitted -> the meta strip and footer drop it, like the social links.
+    defineField({ name: 'location', type: 'string' }),
     defineField({ name: 'timezone', type: 'string', validation: (r) => r.required() }),
     defineField({ name: 'yearsExperience', type: 'string', validation: (r) => r.required() }),
     defineField({ name: 'availability', type: 'string', validation: (r) => r.required() }),

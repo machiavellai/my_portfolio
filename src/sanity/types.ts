@@ -208,7 +208,7 @@ export type SiteSettings = {
   _updatedAt: string;
   _rev: string;
   name: string;
-  location: string;
+  location?: string;
   timezone: string;
   yearsExperience: string;
   availability: string;
