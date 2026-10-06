@@ -19,7 +19,9 @@ export function Experience({ roles }: ExperienceProps) {
       <ol className="flex flex-col border-t border-ink-200">
         {roles.map((role) => (
           <li key={role._id} className="flex flex-col gap-1 border-b border-ink-200 py-4">
-            <div className="flex flex-wrap items-baseline justify-between gap-x-4 gap-y-1">
+            {/* Below md the dates always take their own line, so short and long company
+                names don't leave the date column ragged. */}
+            <div className="flex flex-col gap-1 md:flex-row md:items-baseline md:justify-between md:gap-x-4">
               <p className="text-ui text-ink-900">
                 <span className="font-semibold">{role.title}</span> · {role.company}
               </p>
