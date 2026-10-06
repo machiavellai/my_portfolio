@@ -3,9 +3,10 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "predev": "npm run typegen",
+    "predev": "npm run clean:fetch-cache && npm run typegen",
     "dev": "next dev",
-    "prebuild": "npm run typegen",
+    "prebuild": "npm run clean:fetch-cache && npm run typegen",
+    "clean:fetch-cache": "node -e \"require('fs').rmSync('.next/cache/fetch-cache', { recursive: true, force: true })\"",
     "build": "next build",
     "start": "next start",
     "lint": "eslint",
