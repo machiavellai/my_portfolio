@@ -79,7 +79,8 @@ below `md`.
 Two templates, chosen by body length, not by a CMS toggle.
 
 **Long.** h1 → metric callout → prose at 59ch with `h2` sections (The problem / What
-I did / What broke / Result) → code blocks and figures inline → next-project link.
+I did / What broke / Result) → code blocks an
+d figures inline → next-project link.
 Sticky ToC in the rail column at `lg` only.
 
 **Short (two paragraphs).** h1 → metric callout → two paragraphs → optional code

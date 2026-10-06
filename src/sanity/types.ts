@@ -340,3 +340,43 @@ export type AllSanitySchemaTypes =
   | SanityAssetSourceData
   | SanityImageAsset
   | Geopoint;
+
+// Source: src/sanity/queries.ts
+// Variable: WORK_INDEX_QUERY
+// Query: *[_type == "project"] | order(order asc) {    _id,    title,    "slug": slug.current,    order,    featured,    metric,    failureMode,    scope,    stack,    liveUrl,    repoUrl,    media { alt, image { asset->{ url } } }  }
+export type WORK_INDEX_QUERY_RESULT = Array<{
+  _id: string;
+  title: string;
+  slug: string | null;
+  order: number;
+  featured: boolean | null;
+  metric: {
+    value: string;
+    label: string;
+    source: string;
+  } | null;
+  failureMode: string;
+  scope: "Solo" | "Team of 2" | "Team of 3" | "Team of 5" | "Team of 8+";
+  stack: Array<string>;
+  liveUrl: string | null;
+  repoUrl: string | null;
+  media: {
+    alt: string;
+    image: {
+      asset: {
+        url: string;
+      } | null;
+    };
+  } | null;
+}>;
+
+// Query TypeMap
+declare global {
+  interface SanityQueries {
+    '\n  *[_type == "project"] | order(order asc) {\n    _id,\n    title,\n    "slug": slug.current,\n    order,\n    featured,\n    metric,\n    failureMode,\n    scope,\n    stack,\n    liveUrl,\n    repoUrl,\n    media { alt, image { asset->{ url } } }\n  }\n': WORK_INDEX_QUERY_RESULT;
+  }
+}
+// Lets @sanity/client releases that predate the global registry read it too
+declare module "@sanity/client" {
+  interface SanityQueries extends globalThis.SanityQueries {}
+}
