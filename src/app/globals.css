@@ -35,6 +35,15 @@
   --info-tint: #e9f2fb;
 
   --ring: 0 0 0 0; /* the ring is an outline, not a shadow — see below */
+
+  /* Not in handoff/tokens.css. components.md gives these as literal hex in its state
+     tables (Button primary active; Link hover and active). Declared as tokens so dark
+     theme stays a token swap — they were hardcoded in tailwind.config.ts before. */
+  --ink-950: #090d18;
+  --accent-hover: #16308a;
+  --accent-active: #0f2470;
+
+  color-scheme: light;
 }
 
 :root[data-theme='dark'] {
@@ -63,6 +72,58 @@
   --warn-tint: #2a1f0a;
   --danger-tint: #2c1413;
   --info-tint: #0c1e2e;
+
+  /* No dark values in the spec for these three (blocked since 2026-09-15). STOPGAP,
+     pending the owner's call — reuses existing tokens rather than inventing colours:
+     - Link hover/active keep the base accent. Hover still shows as the 2px underline.
+       The light-mode values are dark blues, unreadable on the dark paper.
+     - Button primary active steps to ink-700, one further than hover (ink-800). */
+  --ink-950: var(--ink-700);
+  --accent-hover: var(--accent);
+  --accent-active: var(--accent);
+
+  color-scheme: dark;
+}
+
+/* Dark theme follows the reader's OS setting. The spec defines the dark tokens but no
+   way to switch to them, and no toggle in the component inventory, so: no toggle, no JS.
+   data-theme="light" / "dark" on <html> still forces either.
+   Keep this block identical to the one above. */
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme='light']) {
+    --ink-900: #e8eaf2; /* display + primary (light) fill              */
+    --ink-800: #d4d8e6;
+    --ink-700: #b9c0d4; /* body prose                                  */
+    --ink-600: #8b94ad; /* meta, rail, code comments                   */
+    --ink-500: #6f7a9b; /* field border — measured against #151b2e     */
+    --ink-400: #4e5a80;
+    --ink-300: #3d4767;
+    --ink-200: #262d44;
+    --ink-100: #1d2338;
+
+    --paper: #0d1120;
+    --surface: #151b2e;
+    --sunken: #0a0e19;
+
+    --accent: #93a8ff;
+
+    --success: #5fd98f;
+    --warn: #f0b354;
+    --danger: #ff8a85;
+    --info: #6fc0f5;
+
+    --success-tint: #10281b;
+    --warn-tint: #2a1f0a;
+    --danger-tint: #2c1413;
+    --info-tint: #0c1e2e;
+
+    /* STOPGAP — see the same three in the block above. */
+    --ink-950: var(--ink-700);
+    --accent-hover: var(--accent);
+    --accent-active: var(--accent);
+
+    color-scheme: dark;
+  }
 }
 
 /* Fonts. Loaded via next/font/local in app/layout.tsx; these are the variable names
@@ -104,24 +165,50 @@ html {
   }
 }
 
-/* Entrance animation is opt-in via a class the observer adds ONLY when motion is
-   allowed. Content must never ship at opacity: 0 waiting for JS. */
-.enter {
-  opacity: 0;
-  transform: translateY(8px);
+/* Section entrance (motion.md): fade + 8px rise, once, on first view.
+   Nothing is hidden by CSS alone. RailObserver marks below-the-fold `.enter` elements
+   `data-pending` only after checking motion is allowed; anything already on screen at
+   load is never hidden, so the hero (the LCP) never fades. Without JS, everything shows. */
+/* The transition lives on the shown state only: hiding a pending element is instant,
+   only the reveal animates. */
+.enter[data-shown] {
   transition:
     opacity 220ms cubic-bezier(0, 0, 0.2, 1),
     transform 220ms cubic-bezier(0, 0, 0.2, 1);
 }
-.enter[data-shown='true'] {
-  opacity: 1;
-  transform: none;
+.enter[data-pending]:not([data-shown]) {
+  opacity: 0;
+  transform: translateY(8px);
+}
+/* Stagger within an entering group: 60ms steps, at most 3 children, 120ms max delay. */
+.enter-stagger > .enter:nth-child(2) {
+  transition-delay: 60ms;
+}
+.enter-stagger > .enter:nth-child(n + 3) {
+  transition-delay: 120ms;
 }
 @media (prefers-reduced-motion: reduce) {
-  .enter {
+  .enter,
+  .enter[data-pending]:not([data-shown]) {
     opacity: 1;
     transform: none;
     transition: none;
+  }
+}
+
+/* Form → success panel (motion.md): 200ms opacity. The panel only mounts after the
+   reader submits, so it never ships invisible. Reduced motion: instant swap. */
+@keyframes fade-in {
+  from {
+    opacity: 0;
+  }
+}
+.fade-in {
+  animation: fade-in 200ms cubic-bezier(0.2, 0, 0.2, 1);
+}
+@media (prefers-reduced-motion: reduce) {
+  .fade-in {
+    animation: none;
   }
 }
 

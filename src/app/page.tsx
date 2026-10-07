@@ -1,69 +1,63 @@
-import Image from "next/image";
+import type { Metadata } from 'next';
+import { About } from '@/components/About/About';
+import { Contact } from '@/components/Contact/Contact';
+import { Experience } from '@/components/Experience/Experience';
+import { Footer } from '@/components/Footer/Footer';
+import { Hero } from '@/components/Hero/Hero';
+import { Nav } from '@/components/Nav/Nav';
+import { RailObserver } from '@/components/RailObserver/RailObserver';
+import { Section } from '@/components/Section/Section';
+import { WorkIndex } from '@/components/WorkIndex/WorkIndex';
+import { client } from '@/sanity/client';
+import { HOME_QUERY, ROLES_QUERY, SITE_SETTINGS_QUERY, WORK_INDEX_QUERY } from '@/sanity/queries';
 
-export default function Home() {
+export async function generateMetadata(): Promise<Metadata> {
+  const [settings, home] = await Promise.all([client.fetch(SITE_SETTINGS_QUERY), client.fetch(HOME_QUERY)]);
+  return {
+    title: settings?.name,
+    description: home?.headline,
+  };
+}
+
+/**
+ * Homepage: hero → work → experience → about → contact (layouts.md). Fetched at build —
+ * static generation, no client fetching (handoff/README.md).
+ *
+ * Every section depends on published content. Until a singleton is published its
+ * query returns null and the sections that need it render nothing — the spec defines
+ * no empty state for them, and a placeholder would be invented content.
+ * Writing and Code render nothing until they have entries and a decided position.
+ */
+export default async function Home() {
+  const [settings, home, projects, roles] = await Promise.all([
+    client.fetch(SITE_SETTINGS_QUERY),
+    client.fetch(HOME_QUERY),
+    client.fetch(WORK_INDEX_QUERY),
+    client.fetch(ROLES_QUERY),
+  ]);
+
   return (
-    <div className="flex flex-col flex-1 items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-      <main className="flex flex-1 w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
-        <Image
-          className="dark:invert h-5 w-[100px]"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
-        />
-        <div className="flex flex-col items-center gap-6 text-center sm:items-start sm:text-left">
-          <h1 className="max-w-xs text-3xl font-semibold leading-10 tracking-tight text-black dark:text-zinc-50">
-            To get started, edit the{" "}
-            <code className="rounded bg-black/[.06] px-1.5 py-0.5 font-mono text-[0.9em] dark:bg-white/[.08]">
-              page.tsx
-            </code>{" "}
-            file.
-          </h1>
-          <p className="max-w-md text-lg leading-8 text-zinc-600 dark:text-zinc-400">
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Learning
-            </a>{" "}
-            center.
-          </p>
-        </div>
-        <div className="flex flex-col gap-4 text-base font-medium sm:flex-row">
-          <a
-            className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-foreground px-5 text-background transition-colors hover:bg-[#383838] dark:hover:bg-[#ccc] md:w-[158px]"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert h-[14px] w-4"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={14}
-            />
-            Deploy Now
-          </a>
-          <a
-            className="flex h-12 w-full items-center justify-center rounded-full border border-solid border-black/[.08] px-5 transition-colors hover:border-transparent hover:bg-black/[.04] dark:border-white/[.145] dark:hover:bg-[#1a1a1a] md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Documentation
-          </a>
+    <>
+      <RailObserver />
+      {settings ? <Nav name={settings.name} resumeUrl={settings.resumeUrl} /> : null}
+
+      <main id="main" className="flex-1 px-6 md:px-8 lg:px-10">
+        <div className="mx-auto max-w-container">
+          {home && settings ? <Hero home={home} settings={settings} /> : null}
+
+          {projects.length > 0 ? (
+            <Section id="work" number="01" title="Work" enter={false}>
+              <WorkIndex projects={projects} />
+            </Section>
+          ) : null}
+
+          {roles.length > 0 ? <Experience roles={roles} /> : null}
+          {home ? <About about={home.about} stack={home.stack} /> : null}
+          {home ? <Contact intro={home.contactIntro} email={settings?.email ?? null} /> : null}
         </div>
       </main>
-    </div>
+
+      {settings ? <Footer settings={settings} /> : null}
+    </>
   );
 }

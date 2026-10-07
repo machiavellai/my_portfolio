@@ -22,9 +22,9 @@ export default {
       // Ink ramp. 900 is display + primary fill, 700 body, 600 meta, 500 field border,
       // 400 is decorative only (fails 3:1 on white — see accessibility.md).
       ink: {
-        // Button primary `active`, from components.md. Not in handoff/tokens.css.
-        // BLOCKED: no dark-theme value in the spec — taken back to the design spec.
-        950: '#090d18',
+        // Button primary `active`, from components.md. Not in handoff/tokens.css — declared
+        // as a token in globals.css so dark theme can swap it (stopgap dark value there).
+        950: 'var(--ink-950)',
         900: 'var(--ink-900)',
         800: 'var(--ink-800)',
         700: 'var(--ink-700)',
@@ -38,17 +38,14 @@ export default {
       paper: 'var(--paper)', // page background
       surface: 'var(--surface)', // cards, inputs
       sunken: 'var(--sunken)', // code blocks
-      // Base accent is the CSS var (themeable). hover/active are components.md's
-      // literal hex values for the Link component — not in handoff/tokens.css as a
-      // ramp, and not redefined for dark theme there either.
-      // BLOCKED 2026-09-15: this is a palette gap in the design spec, not an
-      // implementation question — reusing these light-mode blues on a dark ground is
-      // likely a contrast failure. Do not invent dark values here; taken back to the
-      // design spec. Dark theme currently falls back to these light-mode hex codes.
+      // Base accent is the CSS var (themeable). hover/active are components.md's literal
+      // hex values for the Link component — not in handoff/tokens.css, so they're declared
+      // as tokens in globals.css. The spec has no dark values for them; globals.css holds
+      // a stopgap (dark hover/active = the base accent), pending a design decision.
       accent: {
         DEFAULT: 'var(--accent)',
-        hover: '#16308a',
-        active: '#0f2470',
+        hover: 'var(--accent-hover)',
+        active: 'var(--accent-active)',
       },
       success: 'var(--success)',
       warn: 'var(--warn)',
@@ -107,6 +104,15 @@ export default {
       14: '112px',
       16: '128px',
       full: '100%',
+      // Off-scale values the spec itself uses. Added by name, each traced to its source,
+      // rather than inlined as arbitrary values. Approved 2026-10-06.
+      'link-y': '15px', // standalone link-row block padding (components.md "Link", SC 2.5.8)
+      'nav-sm': '56px', // nav height below md (components.md "Nav") — contradicts "No 56" above; the nav spec wins
+      'hero-sm': '80px', // hero top below lg (layouts.md "Vertical rhythm")
+    },
+    // Sticky rail at lg: 200px label column + the content column (layouts.md, components.md "Rail").
+    gridTemplateColumns: {
+      rail: '200px minmax(0, 1fr)',
     },
     borderRadius: { none: '0', sm: '4px', DEFAULT: '6px', md: '6px', lg: '8px', full: '9999px' },
     borderWidth: { 0: '0', DEFAULT: '1px', 1.5: '1.5px', 2: '2px' },
