@@ -51,11 +51,12 @@ export function WorkIndex({ projects }: WorkIndexProps) {
   return (
     <div className="flex flex-col gap-6">
       {cards.length > 0 ? (
-        <div className={singleColumn ? 'grid grid-cols-1 gap-6' : 'grid grid-cols-1 gap-6 md:grid-cols-2'}>
+        // Entrance: cards fade in one after another, 60ms apart, capped at three steps (motion.md).
+        <div className={`enter-stagger grid grid-cols-1 gap-6 ${singleColumn ? '' : 'md:grid-cols-2'}`}>
           {cards.map((project, i) => {
             const lonelyLast = !singleColumn && cards.length % 2 === 1 && i === cards.length - 1;
             return (
-              <div key={project._id} className={lonelyLast ? 'md:col-span-2' : undefined}>
+              <div key={project._id} className={lonelyLast ? 'enter md:col-span-2' : 'enter'}>
                 <WorkCard project={project} index={i + 1} sizes={lonelyLast ? SIZES_FULL : sizes} />
               </div>
             );
@@ -64,7 +65,7 @@ export function WorkIndex({ projects }: WorkIndexProps) {
       ) : null}
 
       {rows.length > 0 ? (
-        <div className="flex flex-col gap-4">
+        <div className="enter flex flex-col gap-4">
           {tiered ? (
             <h3 className="font-mono text-rail uppercase text-ink-600">Also shipped</h3>
           ) : null}

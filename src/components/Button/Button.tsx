@@ -18,7 +18,13 @@ type ButtonBase = {
 type LinkProps = { href: string; variant?: ButtonVariant; onClick?: never; type?: never; loading?: never; disabled?: never };
 type ActionProps = { href?: never; onClick: () => void; type?: 'button' };
 type SubmitProps = { href?: never; onClick?: () => void; type: 'submit' };
-type LoadingProps = { variant?: 'primary'; loading?: boolean } | { variant: 'secondary' | 'ghost'; loading?: never };
+// loadingLabel: the label shown while loading ("Sending"). Given it, the button keeps
+// one width across both states — "width locked to the default label" (components.md) —
+// and under reduced motion the label gains an ellipsis. Without it, loading just adds
+// the spinner beside the children, which widens the button.
+type LoadingProps =
+  | { variant?: 'primary'; loading?: boolean; loadingLabel?: string }
+  | { variant: 'secondary' | 'ghost'; loading?: never; loadingLabel?: never };
 
 export type ButtonProps = ButtonBase &
   (LinkProps | ((ActionProps | SubmitProps) & LoadingProps & { disabled?: boolean }));
@@ -32,7 +38,10 @@ const sizeClasses: Record<ButtonSize, string> = {
 };
 
 const variantClasses: Record<ButtonVariant, string> = {
-  primary: 'bg-ink-900 text-white hover:bg-ink-800 active:bg-ink-950',
+  // components.md: primary is ink-900 with white text. `text-paper` instead of white:
+  // in dark theme ink-900 becomes the light fill, and white text on it disappears.
+  // Paper is #fafaf9 against white #fff in light mode — no visible difference.
+  primary: 'bg-ink-900 text-paper hover:bg-ink-800 active:bg-ink-950',
   secondary: 'bg-surface border border-ink-200 text-ink-900 hover:border-ink-400 hover:bg-sunken active:bg-ink-100',
   ghost: 'bg-transparent text-ink-700 hover:bg-sunken hover:text-ink-900 active:bg-ink-100',
 };
@@ -77,7 +86,32 @@ export function Button({
     );
   }
 
-  const { onClick } = rest;
+  const { onClick, loadingLabel } = rest;
+
+  // Both labels share one grid cell, so the button is as wide as the wider of the two
+  // in either state and never resizes when it swaps. The spinner is always laid out in
+  // the loading layer (hidden when idle) so it counts toward that width too.
+  const content =
+    loadingLabel === undefined ? (
+      <>
+        {loading ? <Spinner /> : null}
+        {children}
+      </>
+    ) : (
+      <span className="grid">
+        <span className={`col-start-1 row-start-1 inline-flex items-center justify-center ${loading ? 'invisible' : ''}`}>
+          {children}
+        </span>
+        <span className={`col-start-1 row-start-1 inline-flex items-center justify-center gap-2 ${loading ? '' : 'invisible'}`}>
+          <Spinner />
+          <span>
+            {loadingLabel}
+            {/* motion.md: reduced motion stops the spinner, and the label reads "Sending…". */}
+            <span className="hidden motion-reduce:inline">…</span>
+          </span>
+        </span>
+      </span>
+    );
 
   // Loading blocks repeat clicks (and the form submit they'd trigger) without the native
   // `disabled` attribute: that would swap in the grey disabled styles, which the spec's
@@ -97,8 +131,7 @@ export function Button({
       aria-busy={loading || undefined}
       className={className}
     >
-      {loading ? <Spinner /> : null}
-      {children}
+      {content}
     </button>
   );
 }

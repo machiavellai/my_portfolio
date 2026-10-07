@@ -22,9 +22,9 @@ export default {
       // Ink ramp. 900 is display + primary fill, 700 body, 600 meta, 500 field border,
       // 400 is decorative only (fails 3:1 on white — see accessibility.md).
       ink: {
-        // Button primary `active`, from components.md. Not in handoff/tokens.css.
-        // BLOCKED: no dark-theme value in the spec — taken back to the design spec.
-        950: '#090d18',
+        // Button primary `active`, from components.md. Not in handoff/tokens.css — declared
+        // as a token in globals.css so dark theme can swap it (stopgap dark value there).
+        950: 'var(--ink-950)',
         900: 'var(--ink-900)',
         800: 'var(--ink-800)',
         700: 'var(--ink-700)',
@@ -38,17 +38,14 @@ export default {
       paper: 'var(--paper)', // page background
       surface: 'var(--surface)', // cards, inputs
       sunken: 'var(--sunken)', // code blocks
-      // Base accent is the CSS var (themeable). hover/active are components.md's
-      // literal hex values for the Link component — not in handoff/tokens.css as a
-      // ramp, and not redefined for dark theme there either.
-      // BLOCKED 2026-09-15: this is a palette gap in the design spec, not an
-      // implementation question — reusing these light-mode blues on a dark ground is
-      // likely a contrast failure. Do not invent dark values here; taken back to the
-      // design spec. Dark theme currently falls back to these light-mode hex codes.
+      // Base accent is the CSS var (themeable). hover/active are components.md's literal
+      // hex values for the Link component — not in handoff/tokens.css, so they're declared
+      // as tokens in globals.css. The spec has no dark values for them; globals.css holds
+      // a stopgap (dark hover/active = the base accent), pending a design decision.
       accent: {
         DEFAULT: 'var(--accent)',
-        hover: '#16308a',
-        active: '#0f2470',
+        hover: 'var(--accent-hover)',
+        active: 'var(--accent-active)',
       },
       success: 'var(--success)',
       warn: 'var(--warn)',

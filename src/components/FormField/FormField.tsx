@@ -10,12 +10,26 @@ export type FormFieldProps = {
   // drive it otherwise. Added as the minimal thing needed to satisfy that state.
   // Flagged.
   validating?: boolean;
+  // Validation runs on blur, never per keystroke (components.md). The form owns the
+  // rules; the field just reports the blur.
+  onBlur?: () => void;
+  autoComplete?: string;
 };
 
 const fieldClasses =
   'w-full rounded border border-ink-500 bg-surface px-3 text-ui text-ink-900 placeholder:text-ink-600 hover:border-ink-600 focus-visible:border-accent aria-invalid:border-1.5 aria-invalid:border-danger';
 
-export function FormField({ name, label, hint, error, type = 'text', required = false, validating = false }: FormFieldProps) {
+export function FormField({
+  name,
+  label,
+  hint,
+  error,
+  type = 'text',
+  required = false,
+  validating = false,
+  onBlur,
+  autoComplete,
+}: FormFieldProps) {
   const descriptionId = `${name}-description`;
   const description = error ?? (validating ? 'Checking the domain…' : hint);
 
@@ -29,6 +43,8 @@ export function FormField({ name, label, hint, error, type = 'text', required = 
         name={name}
         rows={5}
         required={required}
+        onBlur={onBlur}
+        autoComplete={autoComplete}
         aria-describedby={description ? descriptionId : undefined}
         aria-invalid={Boolean(error) || undefined}
         className={`${fieldClasses} py-3`}
@@ -39,6 +55,8 @@ export function FormField({ name, label, hint, error, type = 'text', required = 
         name={name}
         type={type}
         required={required}
+        onBlur={onBlur}
+        autoComplete={autoComplete}
         aria-describedby={description ? descriptionId : undefined}
         aria-invalid={Boolean(error) || undefined}
         className={`${fieldClasses} h-11.5`}

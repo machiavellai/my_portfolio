@@ -1,5 +1,8 @@
 import type { Metadata } from "next";
 import { IBM_Plex_Mono, IBM_Plex_Sans } from "next/font/google";
+import { SiteSettingsProvider } from "@/components/SiteSettingsProvider/SiteSettingsProvider";
+import { client } from "@/sanity/client";
+import { SITE_SETTINGS_QUERY } from "@/sanity/queries";
 import "./globals.css";
 
 // The spec (handoff/tokens.css) loads these via next/font/local. The repo has no
@@ -23,7 +26,11 @@ const plexMono = IBM_Plex_Mono({
 // Title and description come from Sanity, per route (generateMetadata).
 export const metadata: Metadata = {};
 
-export default function RootLayout({ children }: LayoutProps<"/">) {
+export default async function RootLayout({ children }: LayoutProps<"/">) {
+  // Fetched at build for the 500 page only (see SiteSettingsProvider). Every other route
+  // fetches its own settings on the server.
+  const settings = await client.fetch(SITE_SETTINGS_QUERY);
+
   return (
     <html
       lang="en"
@@ -34,7 +41,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
         <a href="#main" className="skip">
           Skip to content
         </a>
-        {children}
+        <SiteSettingsProvider settings={settings}>{children}</SiteSettingsProvider>
       </body>
     </html>
   );

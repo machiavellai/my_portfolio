@@ -46,14 +46,14 @@ export default async function Home() {
           {home && settings ? <Hero home={home} settings={settings} /> : null}
 
           {projects.length > 0 ? (
-            <Section id="work" number="01" title="Work">
+            <Section id="work" number="01" title="Work" enter={false}>
               <WorkIndex projects={projects} />
             </Section>
           ) : null}
 
           {roles.length > 0 ? <Experience roles={roles} /> : null}
           {home ? <About about={home.about} stack={home.stack} /> : null}
-          {home ? <Contact intro={home.contactIntro} /> : null}
+          {home ? <Contact intro={home.contactIntro} email={settings?.email ?? null} /> : null}
         </div>
       </main>
 
